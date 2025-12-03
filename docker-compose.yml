@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URI=mongodb://mongo:27017/vidoose
+
+  worker:
+    build: .
+    command: npm run dev:worker
+    env_file: .env
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - MONGO_URI=mongodb://mongo:27017/vidoose
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo_data:

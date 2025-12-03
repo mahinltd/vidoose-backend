@@ -1,0 +1,97 @@
+# © Mahin LTD Developer Tanvir
+
+# --- Node.js Dependencies ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Environment / Secrets ---
+.env
+.env.*
+!.env.example
+.env.local
+.env.development
+.env.production
+
+# --- Build Outputs ---
+dist/
+build/
+.out/
+.next/
+.vercel/
+.cache/
+.temp/
+.temp_cache/
+
+# --- TypeScript ---
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# --- Logs ---
+logs/
+*.log
+*.log.*
+log.txt
+error.log
+debug.log
+
+# --- Redis / Queue / BullMQ ---
+redis-data/
+bullmq-data/
+*.rdb
+dump.rdb
+appendonly.aof
+
+# --- MongoDB Local Data (if using local dev) ---
+data/
+data/db/
+*.lock
+mongod.lock
+
+# --- Cloudinary Temp Files ---
+cloudinary-temp/
+uploads/
+tmp/
+temp/
+
+# --- Worker Threads / Job Temp ---
+jobs-temp/
+worker-temp/
+*.pid
+*.pid.lock
+
+# --- Coverage Reports ---
+coverage/
+*.lcov
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editor Settings ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Optional Runtime Files ---
+.pids/
+*.pid
+*.seed
+*.pid.lock
+
+# --- ESLint / Prettier Cache ---
+.eslintcache
+.prettiercache
+
+# --- Docker ---
+docker-data/
+docker-compose.override.yml
+
+# --- Misc ---
+*.bak
+*.orig
+*.tmp
