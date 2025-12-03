@@ -7,7 +7,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import jwt from '@fastify/jwt';
 import rateLimit from '@fastify/rate-limit';
-import compression from '@fastify/compress'; // NEW: Compression Plugin
+import compression from '@fastify/compress';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import { env } from './config/env';
@@ -67,14 +67,12 @@ export const buildApp = async (): Promise<FastifyInstance> => {
     }
   });
 
-  // 2. Performance Optimization (Compression) - NEW
-  // This compresses JSON responses using gzip/brotli to save bandwidth
+  // 2. Performance Optimization
   await app.register(compression, { global: true });
 
   // 3. Global Security Plugins
   app.register(cors, {
     origin: (origin, cb) => {
-      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
       if (!origin) {
         cb(null, true);
         return;
@@ -85,7 +83,6 @@ export const buildApp = async (): Promise<FastifyInstance> => {
         'https://www.vidoose.app',
         'https://admin.vidoose.app',
         'https://api.vidoose.app',
-        // Localhost allowed for dev testing
         'http://localhost:3000',
         'http://localhost:3001',
         'http://127.0.0.1:3000'
@@ -94,7 +91,6 @@ export const buildApp = async (): Promise<FastifyInstance> => {
       if (allowedOrigins.includes(origin)) {
         cb(null, true);
       } else {
-        // Log blocked origin for debugging
         console.log(`🚫 Blocked Origin: ${origin}`);
         cb(new Error("🚫 Blocked by CORS: Unauthorized Domain"), false);
       }
@@ -105,7 +101,6 @@ export const buildApp = async (): Promise<FastifyInstance> => {
 
   app.register(helmet);
 
-  // Rate Limiting (DDOS Protection)
   app.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
@@ -127,20 +122,22 @@ export const buildApp = async (): Promise<FastifyInstance> => {
     }
   });
 
-  // 4. Global Error Handler (Self-Healing Strategy)
+  // 4. Global Error Handler (FIXED TYPE ISSUE)
   app.setErrorHandler((error, request, reply) => {
-    app.log.error(error); // Log to system
+    app.log.error(error); 
 
-    if (error.validation) {
+    // Explicitly cast error to 'any' to access properties without TS error
+    const err = error as any;
+
+    if (err.validation) {
       return reply.status(400).send({
         statusCode: 400,
         error: 'Bad Request',
-        message: error.message
+        message: err.message
       });
     }
 
-    // Rate Limit Error handling specifically
-    if (error.statusCode === 429) {
+    if (err.statusCode === 429) {
       return reply.status(429).send({
         statusCode: 429,
         error: 'Too Many Requests',
@@ -148,7 +145,6 @@ export const buildApp = async (): Promise<FastifyInstance> => {
       });
     }
 
-    // Don't crash, send nice error
     reply.status(500).send({
       statusCode: 500,
       error: 'Internal Server Error',
